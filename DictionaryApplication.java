@@ -1,140 +1,100 @@
 import java.util.Scanner;
 
-// Class representing a node in the Binary Search Tree
+// Node class for Binary Search Tree
 class DictionaryNode {
-    private String word;
-    private String definition;
-    private DictionaryNode left;
-    private DictionaryNode right;
+    String word;
+    String definition;
+    DictionaryNode left, right;
 
     public DictionaryNode(String word, String definition) {
         this.word = word;
         this.definition = definition;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public DictionaryNode getLeft() {
-        return left;
-    }
-
-    public void setLeft(DictionaryNode left) {
-        this.left = left;
-    }
-
-    public DictionaryNode getRight() {
-        return right;
-    }
-
-    public void setRight(DictionaryNode right) {
-        this.right = right;
+        left = right = null;
     }
 }
 
-// Binary Search Tree Dictionary Class
+// Dictionary BST class
 class DictionaryBST {
     private DictionaryNode root;
 
-    // Insert word and definition
+    // Insert a word and definition
     public void insert(String word, String definition) {
-        root = insertRecursive(root, word, definition);
+        root = insertRec(root, word, definition);
     }
 
-    private DictionaryNode insertRecursive(
-            DictionaryNode current,
-            String word,
-            String definition) {
-
-        if (current == null) {
+    private DictionaryNode insertRec(DictionaryNode root, String word, String definition) {
+        if (root == null) {
             return new DictionaryNode(word, definition);
         }
 
-        int comparison = word.compareToIgnoreCase(current.getWord());
+        int compare = word.compareToIgnoreCase(root.word);
 
-        if (comparison < 0) {
-            current.setLeft(
-                    insertRecursive(current.getLeft(), word, definition));
-        } else if (comparison > 0) {
-            current.setRight(
-                    insertRecursive(current.getRight(), word, definition));
+        if (compare < 0) {
+            root.left = insertRec(root.left, word, definition);
+        } else if (compare > 0) {
+            root.right = insertRec(root.right, word, definition);
         } else {
-            // Word already exists, update definition
-            current.setDefinition(definition);
+            // Update existing definition
+            root.definition = definition;
         }
 
-        return current;
+        return root;
     }
 
     // Search for a word
     public String search(String word) {
-        DictionaryNode result = searchRecursive(root, word);
+        DictionaryNode result = searchRec(root, word);
 
         if (result != null) {
-            return result.getDefinition();
+            return result.definition;
         }
 
         return null;
     }
 
-    private DictionaryNode searchRecursive(DictionaryNode current,
-                                           String word) {
-
-        if (current == null) {
+    private DictionaryNode searchRec(DictionaryNode root, String word) {
+        if (root == null) {
             return null;
         }
 
-        int comparison = word.compareToIgnoreCase(current.getWord());
+        int compare = word.compareToIgnoreCase(root.word);
 
-        if (comparison == 0) {
-            return current;
+        if (compare == 0) {
+            return root;
         }
 
-        if (comparison < 0) {
-            return searchRecursive(current.getLeft(), word);
+        if (compare < 0) {
+            return searchRec(root.left, word);
         }
 
-        return searchRecursive(current.getRight(), word);
+        return searchRec(root.right, word);
     }
 
     // Display all words and definitions
-    public void displayAllWords() {
+    public void displayAll() {
         if (root == null) {
             System.out.println("Dictionary is empty.");
             return;
         }
 
-        System.out.println("\n=== ALL SAVED WORDS ===");
-        inOrderTraversal(root);
+        System.out.println("\n===== DICTIONARY CONTENTS =====");
+        inorder(root);
     }
 
-    private void inOrderTraversal(DictionaryNode node) {
-        if (node != null) {
-            inOrderTraversal(node.getLeft());
-
-            System.out.println("Word       : " + node.getWord());
-            System.out.println("Definition : " + node.getDefinition());
-            System.out.println("----------------------------------");
-
-            inOrderTraversal(node.getRight());
+    private void inorder(DictionaryNode root) {
+        if (root != null) {
+            inorder(root.left);
+            System.out.println("Word: " + root.word);
+            System.out.println("Definition: " + root.definition);
+            System.out.println("--------------------------------");
+            inorder(root.right);
         }
     }
 }
 
-// Main Application
-public class DictionaryApplication {
-
+// Main class
+public class DictionaryApp {
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
         DictionaryBST dictionary = new DictionaryBST();
 
@@ -146,13 +106,12 @@ public class DictionaryApplication {
             System.out.println("2. Search Word");
             System.out.println("3. View All Words");
             System.out.println("4. Exit");
-            System.out.print("Enter choice: ");
+            System.out.print("Enter your choice: ");
 
             choice = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // consume newline
 
             switch (choice) {
-
                 case 1:
                     System.out.print("Enter word: ");
                     String word = scanner.nextLine();
@@ -161,7 +120,7 @@ public class DictionaryApplication {
                     String definition = scanner.nextLine();
 
                     dictionary.insert(word, definition);
-                    System.out.println("Word saved successfully!");
+                    System.out.println("Word added successfully!");
                     break;
 
                 case 2:
@@ -178,11 +137,11 @@ public class DictionaryApplication {
                     break;
 
                 case 3:
-                    dictionary.displayAllWords();
+                    dictionary.displayAll();
                     break;
 
                 case 4:
-                    System.out.println("Thank you for using the dictionary.");
+                    System.out.println("Exiting Dictionary...");
                     break;
 
                 default:
